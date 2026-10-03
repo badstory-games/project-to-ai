@@ -6,42 +6,90 @@
 <title>Project to AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- ====== Верхняя панель приложения ====== -->
+<!-- ============ ВЕРХНЯЯ ПАНЕЛЬ ============ -->
 <header class="topbar">
   <div class="tb-left">
     <span class="tb-logo" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 2 3 7v10l9 5 9-5V7z"/>
         <path d="m3 7 9 5 9-5"/>
         <path d="M12 22V12"/>
       </svg>
     </span>
-    <span class="tb-brand"><b>PROJECT</b><i>·</i><b>TO</b><i>·</i><b>AI</b></span>
-    <span class="tb-version">v1.0.0</span>
+    <span class="tb-brand"><b>Project</b><i>→</i><b>AI</b></span>
   </div>
   <div class="tb-right">
-    <span class="tb-pill">BUILD&nbsp;·&nbsp;LOCAL</span>
-    <span class="tb-dot" aria-hidden="true"></span>
+    <span class="tb-pill"><i class="tb-pill-dot"></i>BUILD&nbsp;LOCAL</span>
+    <span class="tb-version">v1.0.0</span>
   </div>
 </header>
 
-<div class="wrap">
+<main class="wrap">
 
+  <!-- ============ HERO ============ -->
   <header class="hero">
-    <h1>Отдайте проект <span class="grad">нейросети</span></h1>
+    <div class="hero-badge">
+      <span class="hb-dot" aria-hidden="true"></span>
+      Контекст проекта → любой чат с ИИ
+    </div>
+    <h1>
+      Отдайте проект<br>
+      <span class="grad">нейросети за&nbsp;минуту</span>
+    </h1>
     <p class="lead">
-      Перетащите папку — <b>Project to AI</b> соберёт исходники в аккуратные части
-      <code>.md</code>, пометит каждую номером, а последнюю — как финальную,
-      чтобы модель не просила «пришли остальное». Всё локально, без серверов.
+      Соберите исходники в&nbsp;аккуратные <code>.md</code>-части с&nbsp;нумерацией
+      и&nbsp;финальным маркером&nbsp;— чтобы модель не просила «пришли остальное».
+      Код, рукописи, документация, заметки. Всё локально.
     </p>
   </header>
 
-  <!-- ====== Дроп-зона ====== -->
+  <!-- ============ ФИЧИ ============ -->
+  <section class="features" aria-label="Что умеет">
+    <div class="feature">
+      <span class="feature-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+      </span>
+      <b>Рекурсивно</b>
+      <small>Все текстовые файлы папки с сохранением путей</small>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16v6H4z"/><path d="M4 14h16v6H4z"/>
+        </svg>
+      </span>
+      <b>Нарезает</b>
+      <small>Части не больше вашего лимита влезают в контекст</small>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </span>
+      <b>Помечает конец</b>
+      <small>У последней части — суффикс <code>__final</code></small>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </span>
+      <b>Без серверов</b>
+      <small>Файлы не покидают браузер, всё локально</small>
+    </div>
+  </section>
+
+  <!-- ============ DROP ZONE ============ -->
   <section class="panel panel-drop">
     <div class="drop" id="drop">
       <i class="corner c-tl" aria-hidden="true"></i>
@@ -51,7 +99,7 @@
 
       <div class="drop-ring">
         <span class="drop-scan" aria-hidden="true"></span>
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
           <path d="M12 11v6"/>
           <path d="m9 14 3-3 3 3"/>
@@ -59,117 +107,197 @@
       </div>
 
       <div class="drop-title">Перетащите папку проекта</div>
-      <div class="drop-hint">Соберём в части, готовые к отправке в ИИ</div>
+      <div class="drop-hint">или выберите её вручную — соберём в части, готовые к ИИ</div>
 
       <div class="or"><span>или</span></div>
 
-      <label class="btn btn-primary">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <label class="btn btn-primary btn-lg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
         </svg>
         ВЫБРАТЬ ПАПКУ
         <input type="file" id="picker" webkitdirectory directory multiple hidden>
       </label>
+
+      <div class="drop-foot">
+        Подойдёт любая папка с текстом — код · рукописи · документация · заметки
+      </div>
     </div>
   </section>
 
-  <!-- ====== Настройки ====== -->
+  <!-- ============ НАСТРОЙКИ ============ -->
   <section class="panel panel-options">
     <div class="panel-head">
-      <span class="panel-icon" aria-hidden="true">▶</span>
-      <h2>SETTINGS</h2>
-      <span class="panel-tag">local&nbsp;·&nbsp;autosaved</span>
+      <span class="panel-icon" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </span>
+      <h2>Настройки</h2>
+      <span class="panel-tag">автосохранение&nbsp;·&nbsp;по&nbsp;проекту</span>
     </div>
 
     <div id="project-status" class="project-status" role="status" aria-live="polite"></div>
 
-    <!-- Лимит и имя -->
-    <div class="field-row">
-      <div class="field">
-        <label class="field-label" for="max-size">Лимит части · МБ</label>
-        <div class="input-wrap">
-          <input type="number" id="max-size" class="input" min="1" max="500" step="1" value="99"
-                 inputmode="numeric" autocomplete="off">
-          <span class="input-suffix">MB</span>
-        </div>
-        <div class="field-hint">1&nbsp;–&nbsp;500. Столько влезает в контекст одной отправки.</div>
+    <!-- OUTPUT -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-dot"></span>
+        <span>Выходные файлы</span>
+        <span class="section-line"></span>
       </div>
-      <div class="field">
-        <label class="field-label" for="output-name">Имя выходного файла</label>
-        <div class="input-wrap">
-          <input type="text" id="output-name" class="input" placeholder="project"
-                 value="project" maxlength="80" autocomplete="off" spellcheck="false">
-          <span class="input-suffix">.md</span>
+
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label" for="max-size">Лимит части</label>
+          <div class="input-wrap">
+            <input type="number" id="max-size" class="input" min="1" max="500" step="1" value="99"
+                   inputmode="numeric" autocomplete="off">
+            <span class="input-suffix">MB</span>
+          </div>
+          <div class="field-hint">Столько влезает в контекст одной отправки.</div>
         </div>
-        <div class="field-hint">К каждой части добавится <code>_N</code>, у последней — <code>_N__final</code>.</div>
+        <div class="field">
+          <label class="field-label" for="output-name">Имя файла</label>
+          <div class="input-wrap">
+            <input type="text" id="output-name" class="input" placeholder="project"
+                   value="project" maxlength="80" autocomplete="off" spellcheck="false">
+            <span class="input-suffix">.md</span>
+          </div>
+          <div class="field-hint">Части → <code>_1</code>, <code>_2</code>, …, последняя → <code>_N__final</code>.</div>
+        </div>
       </div>
     </div>
 
-    <!-- Чипы исключений -->
-    <div class="field field-exclude" id="field-exclude">
-      <label class="field-label" for="chip-input">Исключаемые папки</label>
-
-      <div class="chips" id="chips">
-        <input type="text" id="chip-input"
-               placeholder="Введите название и нажмите Enter…"
-               autocomplete="off" spellcheck="false">
+    <!-- EXCLUDE -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-dot dot-warn"></span>
+        <span>Исключить из дампа</span>
+        <span class="section-line"></span>
       </div>
 
-      <div class="chips-hint">
-        <kbd>Enter</kbd> или <kbd>,</kbd> — добавить · <kbd>Backspace</kbd> — удалить последнюю ·
-        вставка списка через запятую
-      </div>
+      <div class="field field-exclude" id="field-exclude">
+        <div class="chips" id="chips">
+          <input type="text" id="chip-input"
+                 placeholder="Название папки и Enter…"
+                 autocomplete="off" spellcheck="false">
+        </div>
 
-      <div class="chips-presets" id="chip-presets" aria-label="Быстро добавить"></div>
+        <div class="chips-hint">
+          <kbd>Enter</kbd> или <kbd>,</kbd> — добавить · <kbd>Backspace</kbd> — удалить последнюю · вставка списка через запятую
+        </div>
 
-      <div class="chips-actions">
-        <button type="button" class="btn btn-ghost btn-sm" id="chips-reset">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
-          </svg>
-          СТАНДАРТНЫЙ НАБОР
-        </button>
-        <button type="button" class="btn btn-ghost btn-sm" id="chips-clear">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="m19 6-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-          </svg>
-          ОЧИСТИТЬ
-        </button>
+        <div class="chips-presets" id="chip-presets" aria-label="Быстро добавить"></div>
+
+        <div class="chips-actions">
+          <button type="button" class="btn btn-ghost btn-sm" id="chips-reset">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
+            </svg>
+            Стандартный набор
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm" id="chips-clear">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="m19 6-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            </svg>
+            Очистить всё
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="switches">
-      <label class="switch" for="fence">
-        <input type="checkbox" id="fence" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-        <span class="switch-label">
-          <b>Markdown-обёртка</b>
-          <small>Заголовок <code>## путь</code> и блок <code>```lang</code> вокруг каждого файла</small>
-        </span>
-      </label>
+    <!-- MODE -->
+    <div class="section">
+      <div class="section-label">
+        <span class="section-dot dot-accent"></span>
+        <span>Режим</span>
+        <span class="section-line"></span>
+      </div>
 
-      <label class="switch" for="noExclude">
-        <input type="checkbox" id="noExclude">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-        <span class="switch-label">
-          <b>Отключить фильтр исключений</b>
-          <small>Игнорировать список выше и включить все файлы подряд</small>
-        </span>
-      </label>
+      <div class="switches">
+        <label class="switch" for="fence">
+          <input type="checkbox" id="fence" checked>
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+          <span class="switch-label">
+            <b>Markdown-обёртка</b>
+            <small>Заголовок <code>## путь</code> и блок <code>```lang</code> вокруг каждого файла</small>
+          </span>
+        </label>
+
+        <label class="switch" for="noExclude">
+          <input type="checkbox" id="noExclude">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+          <span class="switch-label">
+            <b>Отключить фильтр исключений</b>
+            <small>Игнорировать список выше и включить все файлы подряд</small>
+          </span>
+        </label>
+      </div>
     </div>
   </section>
 
+  <!-- ============ СТАТУС / РЕЗУЛЬТАТЫ ============ -->
   <div id="status" class="status" role="status"></div>
   <div class="bar" id="bar"><i></i></div>
 
   <div id="results" class="results"></div>
 
+  <!-- ============ HELP ============ -->
+  <details class="help">
+    <summary class="help-summary">
+      <span class="help-icon" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </span>
+      <span class="help-title">Как отдавать файлы нейросети</span>
+      <span class="help-caret" aria-hidden="true">▾</span>
+    </summary>
+    <div class="help-body">
+      <div class="help-grid">
+        <div class="help-card">
+          <div class="help-card-h">Один файл</div>
+          <div class="help-card-b">Просто приложите его в чат — этого достаточно.</div>
+        </div>
+        <div class="help-card">
+          <div class="help-card-h">Несколько частей</div>
+          <div class="help-card-b">Прикладывайте <b>все сразу</b>. Суффикс <code>__final</code> сообщит модели, что продолжения нет.</div>
+        </div>
+        <div class="help-card">
+          <div class="help-card-h">Чат не принимает .md</div>
+          <div class="help-card-b">Переименуйте в <code>.txt</code> или вставьте содержимое текстом.</div>
+        </div>
+        <div class="help-card">
+          <div class="help-card-h">Файлы с ⚠️</div>
+          <div class="help-card-b">Существуют в проекте, но не переданы (бинарники, нечитаемые). Модель узнает, что они есть.</div>
+        </div>
+      </div>
+
+      <div class="help-tip">
+        <span class="help-tag">ПРОМПТ</span>
+        <span class="help-quote">Это мой проект, разбитый на N частей. Последняя помечена <code>__final</code>. Прочитай всё, а затем&nbsp;…</span>
+      </div>
+
+      <div class="help-tip warn">
+        <span class="help-tag">ЛИМИТЫ</span>
+        <span>Читается только текст в UTF-8. Бинарники пропускаются (записывается путь с пометкой). Максимум <b>500&nbsp;МБ</b> на часть; для больших объёмов — Chrome или Edge.</span>
+      </div>
+    </div>
+  </details>
+
+  <!-- ============ FOOTER ============ -->
   <footer class="foot">
-    <span class="foot-item"><span class="tb-dot"></span> OFFline</span>
-    <span class="foot-item">без серверов</span>
-    <span class="foot-item">настройки per&nbsp;·&nbsp;project</span>
+    <span class="foot-item"><span class="foot-dot"></span> Offline</span>
+    <span class="foot-sep"></span>
+    <span class="foot-item">Без серверов</span>
+    <span class="foot-sep"></span>
+    <span class="foot-item">Настройки — per&nbsp;·&nbsp;project</span>
   </footer>
-</div>
+</main>
 
 <script src="app.js"></script>
 </body>

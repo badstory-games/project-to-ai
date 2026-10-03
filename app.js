@@ -4,7 +4,7 @@
 /* ============================================================
    Конфигурация
    ============================================================ */
-const DEFAULT_MAX_MB    = 99;                 // значение по умолчанию для поля «лимит»
+const DEFAULT_MAX_MB    = 99;
 const MIN_MAX_MB        = 1;
 const MAX_MAX_MB        = 500;
 const WRITE_CHUNK_CHARS = 4 * 1024 * 1024;
@@ -26,11 +26,7 @@ const PRESET_FOLDERS = [
   '__pycache__','.venv','venv','coverage','.idea','.vscode','.terraform','.gradle'
 ];
 
-/* Значение, которое реально используется при разбиении.
-   Пересчитывается из поля max-size в начале start(). */
 let MAX_BYTES = DEFAULT_MAX_MB * 1024 * 1024;
-
-/* Ключ текущего проекта — по нему сохраняем/восстанавливаем настройки. */
 let currentProjectKey = '';
 
 /* ============================================================
@@ -74,6 +70,7 @@ function escapeHtml(s) {
   ));
 }
 function fmtSize(b) {
+  if (!Number.isFinite(b)) return '—';
   if (b < 1024) return b + ' Б';
   if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' КБ';
   return (b / 1024 / 1024).toFixed(2) + ' МБ';
@@ -141,7 +138,6 @@ function saveProjectConfig(key, cfg) {
   const all = readStore();
   all[key] = { ...cfg, updatedAt: Date.now() };
 
-  /* Не даём хранилищу пухнуть: держим максимум ~200 записей. */
   const keys = Object.keys(all);
   if (keys.length > 200) {
     keys.sort((a, b) => (all[b].updatedAt || 0) - (all[a].updatedAt || 0));
@@ -150,7 +146,6 @@ function saveProjectConfig(key, cfg) {
   writeStore(all);
 }
 
-/* Ключ проекта: корневая папка (или набор корней, если их несколько). */
 function getProjectKey(rawFiles) {
   if (!rawFiles || !rawFiles.length) return '';
   const roots = new Set();
@@ -169,9 +164,9 @@ function getProjectKey(rawFiles) {
 function sanitizeOutputName(raw) {
   const s = String(raw || '')
     .trim()
-    .replace(/[\/\\:*?"<>|]+/g, '_')   // запрещённые в файловых системах символы
-    .replace(/\.md$/i, '')             // не даём вписать .md руками
-    .replace(/^\.+/, '')               // не начинаем с точки
+    .replace(/[\/\\:*?"<>|]+/g, '_')
+    .replace(/\.md$/i, '')
+    .replace(/^\.+/, '')
     .trim();
   return s.slice(0, 80) || DEFAULT_OUTPUT_NAME;
 }
@@ -205,7 +200,6 @@ function currentConfig() {
   };
 }
 
-/* Считывает лимит из UI и обновляет MAX_BYTES. Возвращает байты. */
 function applyMaxBytes() {
   const mb = clamp(parseFloat(maxSizeEl.value) || DEFAULT_MAX_MB, MIN_MAX_MB, MAX_MAX_MB);
   MAX_BYTES = Math.round(mb * 1024 * 1024);
@@ -232,7 +226,6 @@ function renderProjectStatus(key, restored) {
   projectStatusEl.classList.add('on');
 }
 
-/* Автосохранение с задержкой, чтобы не писать в localStorage на каждый keystroke. */
 let saveTimer = 0;
 function scheduleSave() {
   if (!currentProjectKey) return;
@@ -357,7 +350,6 @@ noExcludeEl.addEventListener('change', () => {
   scheduleSave();
 });
 
-/* Поля лимита и имени файла */
 maxSizeEl.addEventListener('input', () => {
   applyMaxBytes();
   scheduleSave();
@@ -478,6 +470,23 @@ function buildChunked(path, text, lang, partNum) {
   return `${header}${fence}${lang}\n${body}\n${fence}\n\n`;
 }
 
+/* Плейсхолдер для файла, который НЕ удалось прочитать.
+   В дампе он остаётся: путь, расширение, пометка «не передан нейросети».
+   Благодаря этому модель знает, что файл в проекте есть, просто не приложен. */
+function buildPlaceholder(path, reason, sizeBytes) {
+  const dot = path.lastIndexOf('.');
+  const slash = path.lastIndexOf('/');
+  const ext = (dot > slash && dot !== -1) ? path.slice(dot + 1) : '(без расширения)';
+  const sizeStr = Number.isFinite(sizeBytes) ? fmtSize(sizeBytes) : 'неизвестен';
+  return (
+    `## ${path}\n\n` +
+    `> ⚠️ **Файл присутствует в проекте, но не был передан нейросети.**\n` +
+    `> Причина: ${reason}.\n` +
+    `> Расширение: \`${ext}\`. Размер: ${sizeStr}.\n` +
+    `> Содержимое этого файла в дампе отсутствует.\n\n`
+  );
+}
+
 /* ============================================================
    Контекст сборки
    ============================================================ */
@@ -514,20 +523,32 @@ function createCtx() {
   };
 }
 
+/* Вписать плейсхолдер и обновить статистику.
+   Если по какой-то причине даже он не влез — фиксируем в skipped. */
+function addPlaceholder(ctx, stats, path, reason, sizeBytes) {
+  const entry = buildPlaceholder(path, reason, sizeBytes);
+  if (ctx.addEntry(entry)) {
+    stats.notSent++;
+    return true;
+  }
+  stats.skipped.push({ path, reason: reason + ' (плейсхолдер не влез)' });
+  return false;
+}
+
 /* ============================================================
    Разрезание большого файла между частями
    ============================================================ */
 async function splitBigFile(file, path, useFence, ctx, stats) {
   const bytes = await readFileAsBytes(file);
   if (bytes === null) {
-    stats.skipped.push({ path, reason: 'нечитаемый' });
+    addPlaceholder(ctx, stats, path, 'нечитаемый файл', file && file.size);
     return;
   }
 
   const check = Math.min(bytes.length, 8000);
   for (let i = 0; i < check; i++) {
     if (bytes[i] === 0) {
-      stats.skipped.push({ path, reason: 'бинарный' });
+      addPlaceholder(ctx, stats, path, 'бинарный файл', bytes.length);
       return;
     }
   }
@@ -713,8 +734,9 @@ function renderDiagnostics(container, info) {
     ['После нормализации путей', info.normalized],
     ['После фильтра исключений', info.filtered],
     ['Файлов прочитано как текст', info.read],
+    ['Файлов без содержимого (только путь)', info.notSent || 0],
     ['Файлов разрезано на части', info.splitFiles ? info.splitFiles.length : 0],
-    ['Пропущено', info.skipped ? info.skipped.length : 0],
+    ['Пропущено полностью', info.skipped ? info.skipped.length : 0],
   ];
   for (const [k, v] of lines) {
     const row = document.createElement('div');
@@ -761,7 +783,7 @@ async function start(rawFiles, sourceLabel) {
   const stats = {
     source: sourceLabel || '—',
     raw: rawFiles ? rawFiles.length : 0,
-    normalized: 0, filtered: 0, read: 0,
+    normalized: 0, filtered: 0, read: 0, notSent: 0,
     skipped: [], samplePaths: [], splitFiles: []
   };
 
@@ -779,7 +801,6 @@ async function start(rawFiles, sourceLabel) {
       return;
     }
 
-    /* --- Проект: восстановить или зафиксировать настройки --- */
     const projectKey = getProjectKey(rawFiles);
     currentProjectKey = projectKey;
     const saved = projectKey ? loadProjectConfig(projectKey) : null;
@@ -795,7 +816,6 @@ async function start(rawFiles, sourceLabel) {
     const useFence = fenceEl.checked;
     const outputBase = sanitizeOutputName(outputNameEl.value);
 
-    /* Нормализуем пути */
     let files = rawFiles.map(({ file, path }) => {
       const norm = String(path || '').replace(/\\/g, '/');
       return { file, path: stripRoot(norm) };
@@ -803,7 +823,6 @@ async function start(rawFiles, sourceLabel) {
     stats.normalized = files.length;
     stats.samplePaths = files.slice(0, 30).map(f => f.path);
 
-    /* Фильтр исключений */
     if (excludeList.length) {
       files = files.filter(f => {
         const parts = f.path.split('/');
@@ -846,7 +865,8 @@ async function start(rawFiles, sourceLabel) {
       if (file.size <= MAX_BYTES) {
         const text = await readFileAsText(file);
         if (text === null) {
-          stats.skipped.push({ path, reason: 'бинарный или нечитаемый' });
+          /* Бинарник или нечитаемый: пишем плейсхолдер с путём. */
+          addPlaceholder(ctx, stats, path, 'бинарный или нечитаемый формат', file.size);
           continue;
         }
 
@@ -882,7 +902,6 @@ async function start(rawFiles, sourceLabel) {
     renderResults(ctx.chunks, stats, stats.read, outputBase);
     setStatus('');
 
-    /* Финальное сохранение настроек проекта */
     if (projectKey) saveProjectConfig(projectKey, currentConfig());
 
     barEl.classList.remove('on');
@@ -899,16 +918,12 @@ async function start(rawFiles, sourceLabel) {
    Отрисовка результатов
    ============================================================ */
 
-/* Нумерация и маркеры частей.
-   Всегда есть суффикс _N__final у последней (в т.ч. у единственной) части.
-   Промежуточные части — base_N.md без __final. */
+/* Нумерация и маркеры частей. У последней (в т.ч. единственной) — __final. */
 function makePartName(base, n, total) {
   if (n === total) return `${base}_${n}__final.md`;
   return `${base}_${n}.md`;
 }
 
-/* Заголовок-комментарий, который встраивается в начало каждой части.
-   Явно сообщает модели, есть ли продолжение. */
 function partHeader(n, total) {
   if (total === 1) {
     return `<!-- Часть 1 из 1 — единственная и ПОСЛЕДНЯЯ, продолжения нет. Все файлы проекта внутри. -->\n\n`;
@@ -939,11 +954,15 @@ function renderResults(chunks, stats, includedCount, outputBase) {
   const projRow = currentProjectKey
     ? `<span>Проект: <b>${escapeHtml(currentProjectKey)}</b></span>`
     : '';
+  const notSentRow = stats.notSent
+    ? `<span>Без содержимого: <b>${stats.notSent}</b></span>`
+    : '';
   summary.innerHTML = `
     <div class="big">Готово</div>
     <div class="stats">
       ${projRow}
       <span>Файлов: <b>${includedCount}</b></span>
+      ${notSentRow}
       <span>Частей: <b>${parts.length}</b></span>
       <span>Размер: <b>${fmtSize(totalBytes)}</b></span>
       <span>Лимит части: <b>${fmtSize(MAX_BYTES)}</b></span>
@@ -952,6 +971,14 @@ function renderResults(chunks, stats, includedCount, outputBase) {
   `;
   resultsEl.appendChild(summary);
 
+  if (stats.notSent) {
+    const n = document.createElement('div');
+    n.className = 'notice info';
+    n.textContent = `В дамп добавлено записей о файлах без содержимого: ${stats.notSent}. ` +
+                    'Они присутствуют в проекте, но не переданы нейросети — только путь, ' +
+                    'расширение и пометка. Модель будет знать, что эти файлы есть.';
+    resultsEl.appendChild(n);
+  }
   if (!HAS_FSAPI) {
     const n = document.createElement('div');
     n.className = 'notice';
@@ -1038,7 +1065,7 @@ function renderResults(chunks, stats, includedCount, outputBase) {
     const det = document.createElement('details');
     det.className = 'skipped';
     const sum = document.createElement('summary');
-    sum.textContent = `Пропущено файлов: ${stats.skipped.length}`;
+    sum.textContent = `Пропущено полностью: ${stats.skipped.length}`;
     const ul = document.createElement('ul');
     for (const s of stats.skipped.slice(0, 300)) {
       const li = document.createElement('li');
